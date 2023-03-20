@@ -1,0 +1,32 @@
+namespace _05_pipeline
+{
+    public class ContentMiddleware
+    {
+        private RequestDelegate nextDelegate;
+        public ContentMiddleware(RequestDelegate nextDelegate)
+        {
+            this.nextDelegate = nextDelegate;
+        }
+
+        public async Task Invoke(HttpContext context)
+        {
+            if(context.Request.Path.ToString() == "/middleware")
+            {
+                await context.Response.WriteAsync("This is form the content");
+            }
+            else
+            {
+                await nextDelegate.Invoke(context);
+            }
+        }
+        //три вещи необходимые для написания собственного Middleware
+    }
+
+    public static class ContentMiddlewareExtension
+    {
+        public static IApplicationBuilder cme(this IApplicationBuilder app)
+        {
+            return app.UseMiddleware<ContentMiddleware>();
+        }
+    }
+}
